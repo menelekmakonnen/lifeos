@@ -446,9 +446,21 @@ function getAllMonthKeys() {
  * Wipe every LifeOS key from localStorage, re-seed with defaults,
  * and notify subscribers.  Used by the Settings → Reset button.
  */
-export function clearAllData() {
+export function clearAllData(blankSlate = false) {
   const keys = Object.keys(localStorage).filter(k => k.startsWith(PREFIX));
   keys.forEach(k => localStorage.removeItem(k));
+  
+  if (blankSlate) {
+    lset('wrows', []);
+    lset('goals', []);
+    lset('activities', []);
+    lset('beauty', []);
+    lset('rhythm', []);
+    lset('rules', []);
+    lset('meals', []);
+    lset('tasks', []);
+  }
+  
   initData();
   notify();
 }

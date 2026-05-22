@@ -122,6 +122,15 @@ export function renderSettings() {
         <div class="form-hint">${usage.keys} keys · 5 MB browser limit</div>
       </div>
 
+      <div style="margin-bottom:var(--sp-5); padding:var(--sp-4); background:var(--bg-surface-2); border-radius:var(--radius-md); border:1px solid var(--border-default);">
+        <div style="font-family:'Outfit',sans-serif;font-weight:700;font-size:16px;margin-bottom:var(--sp-2);">🚀 Start Fresh</div>
+        <div style="font-size:13px;color:var(--text-secondary);margin-bottom:var(--sp-3);">
+          Run the onboarding wizard to configure your profile, email, and preferences. 
+          <span class="text-accent-rose font-weight-600">This will wipe all existing data and give you a blank slate.</span>
+        </div>
+        <button class="btn btn-primary" style="width:100%; justify-content:center;" data-action="start-onboarding">Begin Onboarding</button>
+      </div>
+
       <div class="grid-3">
         <div class="card-sm" style="text-align:center;cursor:pointer" data-action="export-data">
           <div style="font-size:28px;margin-bottom:var(--sp-2)">📦</div>
@@ -299,6 +308,82 @@ export function bindSettings(container) {
             app.toast('All data cleared', 'success');
             app.renderPage();
           });
+          modal.querySelector('[data-action="modal-cancel"]')?.addEventListener('click', () => {
+            app.closeModal();
+          });
+        });
+        break;
+      }
+
+      case 'start-onboarding': {
+        import('../app.js').then(app => {
+          app.openModal(`
+            <div style="text-align:center; margin-bottom:var(--sp-5);">
+              <div style="font-size:48px; margin-bottom:var(--sp-3);">🚀</div>
+              <div class="section-title">Welcome to Life OS</div>
+              <p class="text-secondary" style="font-size:14px; margin-top:var(--sp-2);">Let's get your command centre set up.</p>
+            </div>
+            
+            <div style="background:var(--accent-rose-glow); border:1px solid hsla(4, 90%, 65%, 0.3); padding:var(--sp-3); border-radius:var(--radius-md); margin-bottom:var(--sp-5);">
+              <div style="color:var(--accent-rose); font-weight:700; font-size:13px; margin-bottom:4px;">⚠️ Warning</div>
+              <div style="color:var(--accent-rose); font-size:12px;">Completing this setup will <strong>permanently wipe</strong> all existing tasks, expenses, goals, and history, replacing them with a completely blank slate.</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="ob-name">Your Name</label>
+              <input type="text" id="ob-name" class="form-input" placeholder="e.g. Priscilla" value="${esc(prefs.name || '')}">
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label" for="ob-email">Email Address</label>
+              <input type="email" id="ob-email" class="form-input" placeholder="For updates and sync" value="${esc(prefs.email || '')}">
+            </div>
+
+            <div class="form-group" style="margin-bottom:var(--sp-6);">
+              <label class="form-label" for="ob-currency">Primary Currency</label>
+              <select id="ob-currency" class="form-input">
+                <option value="ghs" ${prefs.primaryCurrency === 'ghs' ? 'selected' : ''}>Ghana Cedi (GHS)</option>
+                <option value="usd" ${prefs.primaryCurrency === 'usd' ? 'selected' : ''}>US Dollar (USD)</option>
+                <option value="gbp" ${prefs.primaryCurrency === 'gbp' ? 'selected' : ''}>British Pound (GBP)</option>
+              </select>
+            </div>
+
+            <div style="display:flex;gap:var(--sp-3);justify-content:flex-end">
+              <button class="btn btn-ghost" data-action="modal-cancel">Cancel</button>
+              <button class="btn btn-primary" id="confirm-onboarding">Finish Setup</button>
+            </div>
+          `);
+          
+          const modal = document.getElementById('modal-root');
+          
+          modal.querySelector('#confirm-onboarding')?.addEventListener('click', () => {
+            const newName = modal.querySelector('#ob-name').value.trim();
+            const newEmail = modal.querySelector('#ob-email').value.trim();
+            const newCurrency = modal.querySelector('#ob-currency').value;
+            
+            if (!newName) {
+              app.toast('Please enter your name', 'error');
+              return;
+            }
+
+            // Wipe data with blank slate
+            clearAllData(true);
+            
+            // Save new preferences
+            prefs.name = newName;
+            prefs.email = newEmail;
+            prefs.primaryCurrency = newCurrency;
+            savePrefs();
+            
+            app.closeModal();
+            app.toast('Welcome to Life OS! Setup complete.', 'success');
+            
+            // Reload app fully to ensure empty state propagates everywhere correctly
+            setTimeout(() => {
+              window.location.reload();
+            }, 1000);
+          });
+          
           modal.querySelector('[data-action="modal-cancel"]')?.addEventListener('click', () => {
             app.closeModal();
           });
