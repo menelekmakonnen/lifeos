@@ -26,6 +26,7 @@ import { renderAnalytics, bindAnalytics } from './pages/analytics.js';
 import { renderTaskDashboard, bindTaskDashboard } from './pages/taskDashboard.js';
 import { renderTasks, bindTasks } from './pages/tasks.js';
 import { renderSettings, bindSettings } from './pages/settings.js';
+import { initNotesSidebar, refreshNotesView } from './components/notesSidebar.js';
 
 // ── Page Registry ──────────────────────────────────────────
 const PAGES = {
@@ -190,6 +191,9 @@ export function navigate(page) {
   // Close sidebar on mobile
   document.getElementById('sidebar').classList.remove('open');
   document.getElementById('sidebar-overlay').classList.remove('open');
+  
+  // Refresh notes sidebar for the new page
+  refreshNotesView();
 }
 
 // ── Month Navigation ───────────────────────────────────────
@@ -337,6 +341,7 @@ export function getPageInfo() {
 
 // ── Boot ───────────────────────────────────────────────────
 render();
+initNotesSidebar();
 
 // Fetch live exchange rates in background (non-blocking)
 fetchExchangeRates().catch(() => {});
