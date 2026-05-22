@@ -62,7 +62,7 @@ export function renderSidebar() {
   return `
     <!-- Brand -->
     <div class="sidebar-brand">
-      <div class="sidebar-logo">${initial}</div>
+      <div class="sidebar-logo"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><path d="M32 10 L54 32 L32 54 L10 32Z" stroke="url(#slg)" stroke-width="1.5" stroke-opacity=".5" stroke-linejoin="round"/><path d="M32 17 L49 32 L32 47 L15 32Z" fill="url(#slg)" fill-opacity=".15" stroke="url(#slg)" stroke-width="1.2" stroke-linejoin="round"/><path d="M29 23 L26 30 L31 30 L28 38" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><defs><linearGradient id="slg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#5b7cfa"/><stop offset="100%" stop-color="#8b5cf6"/></linearGradient></defs></svg></div>
       <div>
         <div class="sidebar-title">${esc(prefs.appTitle || 'Life OS')}</div>
         <div class="sidebar-tag">${esc(prefs.subtitle || 'Personal Command Centre')}</div>

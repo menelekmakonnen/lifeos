@@ -162,6 +162,10 @@ a:hover { text-decoration: underline; }
   font-weight: 700;
   color: #fff;
   flex-shrink: 0;
+  transition: transform 400ms var(--ease-spring);
+}
+.sidebar-logo:hover {
+  transform: rotate(8deg) scale(1.08);
 }
 .sidebar-title {
   font-family: 'Outfit', sans-serif;
@@ -214,6 +218,10 @@ a:hover { text-decoration: underline; }
   background: var(--accent-blue-glow);
   color: var(--accent-blue);
   font-weight: 600;
+}
+.nav-item:hover .nav-icon {
+  transform: translateX(2px);
+  transition: transform 200ms var(--ease-spring);
 }
 .nav-item.active::before {
   content: '';
@@ -421,6 +429,11 @@ a:hover { text-decoration: underline; }
   color: #fff;
   cursor: pointer;
   flex-shrink: 0;
+  transition: transform 200ms var(--ease-spring), box-shadow 200ms var(--ease-out);
+}
+.topbar-avatar:hover {
+  transform: scale(1.12);
+  box-shadow: 0 0 16px var(--accent-purple-glow);
 }
 
 /* ── Content ───────────────────────────────────────────────── */
@@ -533,22 +546,28 @@ a:hover { text-decoration: underline; }
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
   padding: var(--sp-5);
-  transition: all var(--duration-normal) var(--ease-out);
+  transition: transform var(--duration-normal) var(--ease-out),
+              border-color var(--duration-normal) var(--ease-out),
+              box-shadow var(--duration-normal) var(--ease-out);
 }
 .card:hover {
   border-color: var(--border-default);
   box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
 }
 .card-sm {
   background: var(--bg-surface-1);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   padding: var(--sp-4);
-  transition: all var(--duration-normal) var(--ease-out);
+  transition: transform var(--duration-normal) var(--ease-out),
+              border-color var(--duration-normal) var(--ease-out),
+              box-shadow var(--duration-normal) var(--ease-out);
 }
 .card-sm:hover {
   border-color: var(--border-default);
   box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
 }
 .glass-card {
   background: hsla(228, 16%, 9%, 0.6);
@@ -556,11 +575,14 @@ a:hover { text-decoration: underline; }
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
   padding: var(--sp-5);
-  transition: all var(--duration-normal) var(--ease-out);
+  transition: transform var(--duration-normal) var(--ease-out),
+              border-color var(--duration-normal) var(--ease-out),
+              box-shadow var(--duration-normal) var(--ease-out);
 }
 .glass-card:hover {
   border-color: var(--border-default);
   box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
 }
 
 /* ── Stat Cards ────────────────────────────────────────────── */
@@ -579,6 +601,10 @@ a:hover { text-decoration: underline; }
   font-weight: 700;
   color: var(--text-primary);
   line-height: 1.2;
+  transition: text-shadow 300ms var(--ease-out);
+}
+.stat-card:hover .stat-value {
+  text-shadow: 0 0 20px hsla(225, 92%, 65%, 0.25);
 }
 .stat-card .stat-trend {
   display: inline-flex;
@@ -645,10 +671,16 @@ a:hover { text-decoration: underline; }
   font-family: 'Outfit', sans-serif;
   font-size: 32px;
   font-weight: 800;
-  background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+  background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple), var(--accent-blue));
+  background-size: 200% 100%;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+  animation: greetingShift 8s ease-in-out infinite;
+}
+@keyframes greetingShift {
+  0%, 100% { background-position: 0% 50%; }
+  50%      { background-position: 100% 50%; }
 }
 .date-display {
   font-size: 14px;
@@ -694,12 +726,21 @@ a:hover { text-decoration: underline; }
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.3px;
+  transition: transform 200ms var(--ease-spring), box-shadow 200ms var(--ease-out);
+}
+.pill:hover {
+  transform: scale(1.06);
 }
 .pill-blue   { background: var(--accent-blue-glow);   color: var(--accent-blue); }
+.pill-blue:hover   { box-shadow: 0 0 12px var(--accent-blue-glow); }
 .pill-purple { background: var(--accent-purple-glow); color: var(--accent-purple); }
+.pill-purple:hover { box-shadow: 0 0 12px var(--accent-purple-glow); }
 .pill-teal   { background: var(--accent-teal-glow);   color: var(--accent-teal); }
+.pill-teal:hover   { box-shadow: 0 0 12px var(--accent-teal-glow); }
 .pill-gold   { background: var(--accent-gold-glow);   color: var(--accent-gold); }
+.pill-gold:hover   { box-shadow: 0 0 12px var(--accent-gold-glow); }
 .pill-rose   { background: var(--accent-rose-glow);   color: var(--accent-rose); }
+.pill-rose:hover   { box-shadow: 0 0 12px var(--accent-rose-glow); }
 .pill-muted  { background: var(--bg-surface-3);       color: var(--text-secondary); }
 
 /* ── Progress Bars ─────────────────────────────────────────── */
@@ -715,6 +756,7 @@ a:hover { text-decoration: underline; }
   border-radius: var(--radius-full);
   transition: width 0.6s var(--ease-out);
   position: relative;
+  animation: progressFill 0.8s var(--ease-out) both;
 }
 .progress-fill::after {
   content: '';
@@ -915,15 +957,24 @@ textarea.form-input {
   background: var(--bg-overlay);
   backdrop-filter: blur(8px);
   z-index: 200;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  padding: var(--sp-4);
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--sp-4);
   animation: fadeIn 200ms var(--ease-out);
 }
+/* Flex spacers — absorb extra space above/below to center the modal.
+   When the modal is too tall they shrink and the overlay scrolls.
+   min-height prevents the modal from touching the very edge. */
+.modal-overlay::before,
+.modal-overlay::after {
+  content: '';
+  flex: 1 1 auto;
+  min-height: var(--sp-6);
+}
 .modal {
-  margin: auto;
+  flex-shrink: 0;
   background: var(--bg-surface-1);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-xl);
@@ -1260,6 +1311,10 @@ textarea.form-input {
 .task-card:hover {
   border-color: var(--border-default);
   box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+.task-card:hover::before {
+  box-shadow: 0 0 8px currentColor;
 }
 .task-card .task-checkbox { flex-shrink: 0; margin-top: 2px; }
 .task-card .task-body { flex: 1; min-width: 0; }
@@ -1964,8 +2019,8 @@ details > p {
   .content { padding: var(--sp-3); }
   .stat-card .stat-value { font-size: 22px; }
   .modal {
-    margin: var(--sp-2);
     border-radius: var(--radius-lg);
+    padding: var(--sp-4);
   }
   .cal-day { min-height: 60px; }
 
