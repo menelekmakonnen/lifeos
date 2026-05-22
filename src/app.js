@@ -65,13 +65,14 @@ export function toast(msg, type = 'info') {
 // ── Modal System ───────────────────────────────────────────
 export function openModal(html, cls = '') {
   const root = document.getElementById('modal-root');
-  root.innerHTML = `<div class="modal-overlay" id="modal-overlay">
-    <div class="modal ${cls}" id="modal-body">${html}</div>
-  </div>`;
+  // Overlay and panel are SIBLINGS — not parent-child.
+  // This avoids backdrop-filter creating a containing block
+  // that breaks position:fixed on the panel.
+  root.innerHTML = `<div class="modal-overlay" id="modal-overlay"></div>
+    <div class="modal ${cls}" id="modal-body">${html}</div>`;
   
-  root.querySelector('.modal-overlay').addEventListener('click', (e) => {
-    if (e.target === e.currentTarget) closeModal();
-  });
+  // Click overlay backdrop → close
+  root.querySelector('.modal-overlay').addEventListener('click', () => closeModal());
   
   requestAnimationFrame(() => {
     const firstInput = root.querySelector('input, select, textarea');
