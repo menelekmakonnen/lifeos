@@ -184,16 +184,97 @@ document.addEventListener('keydown', (e) => {
 export function navigate(page) {
   if (!PAGES[page]) page = 'overview';
   state.currentPage = page;
-  render();
+  
+  // ── 1. Patch sidebar active state (DOM manipulation, no innerHTML) ──
+  const sidebar = document.getElementById('sidebar');
+  sidebar.querySelectorAll('.nav-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.page === page);
+  });
+  
+  // ── 2. Patch topbar breadcrumb + add button (tiny innerHTML) ──
+  patchTopbar();
+  
+  // ── 3. Patch mobile nav active state ──
+  const mobileNav = document.getElementById('mobile-nav');
+  const MORE_IDS = ['analytics','budget','wealth','taskDashboard','calendar','settings'];
+  const isMorePage = MORE_IDS.includes(page);
+  mobileNav.querySelectorAll('.mobile-nav-item').forEach(el => {
+    const id = el.dataset.page;
+    if (id === 'more') {
+      el.classList.toggle('active', isMorePage);
+    } else {
+      el.classList.toggle('active', id === page);
+    }
+  });
+  
+  // ── 4. Re-render page content only ──
+  renderPage();
+  
   const content = document.getElementById('content');
   if (content) content.scrollTop = 0;
   
   // Close sidebar on mobile
-  document.getElementById('sidebar').classList.remove('open');
+  sidebar.classList.remove('open');
   document.getElementById('sidebar-overlay').classList.remove('open');
   
   // Refresh notes sidebar for the new page
   refreshNotesView();
+  
+  // Update title
+  const pg = PAGES[page] || PAGES.overview;
+  document.title = `${pg.title} — ${prefs.appTitle || 'Life OS'}`;
+}
+
+/**
+ * Patch only the topbar breadcrumb and add button text.
+ * Much faster than rebuilding the entire topbar innerHTML + re-binding.
+ */
+function patchTopbar() {
+  const PAGE_META = {
+    overview:'Home›Overview', analytics:'Home›Analytics',
+    finance:'Finance›Finance Hub', expenses:'Finance›Expenses',
+    budget:'Finance›Budget', wealth:'Finance›Wealth',
+    taskDashboard:'Tasks›Dashboard', tasks:'Tasks›All Tasks',
+    calendar:'Life›Calendar', life:'Life›Life Hub',
+    settings:'System›Settings',
+  };
+  const meta = PAGE_META[state.currentPage] || 'Home›Overview';
+  const [section, title] = meta.split('›');
+  
+  const breadcrumb = document.querySelector('.topbar-breadcrumb');
+  if (breadcrumb) {
+    breadcrumb.innerHTML = `<span>${section}</span><span style="opacity:0.3">›</span><span class="current">${title}</span>`;
+  }
+  
+  // Update add button label
+  const btnAdd = document.querySelector('.btn-add');
+  if (btnAdd) {
+    const addMap = {
+      expenses:'add-expense', finance:'add-expense', budget:'add-expense',
+      wealth:'add-wealth', tasks:'add-task', taskDashboard:'add-task',
+      calendar:'add-event',
+    };
+    const labelMap = {
+      expenses:'Expense', finance:'Expense', budget:'Expense',
+      wealth:'Entry', tasks:'Task', taskDashboard:'Task',
+      calendar:'Event',
+    };
+    const action = addMap[state.currentPage] || 'add-quick';
+    const label = labelMap[state.currentPage] || 'New';
+    btnAdd.dataset.action = action;
+    btnAdd.innerHTML = `<span>+</span><span>${label}</span>`;
+  }
+  
+  // Update month display
+  const monthSpan = document.querySelector('.topbar-month span:not(button)');
+  if (monthSpan && !monthSpan.closest('button')) {
+    // Find the text span (not the buttons)
+    const topbarMonth = document.querySelector('.topbar-month');
+    if (topbarMonth) {
+      const spans = topbarMonth.querySelectorAll('span');
+      if (spans.length) spans[0].textContent = state.selectedMonth;
+    }
+  }
 }
 
 // ── Month Navigation ───────────────────────────────────────
@@ -203,7 +284,8 @@ export function prevMonth() {
   if (idx > 0) {
     state.selectedMonth = months[idx - 1];
     saveSelectedMonth();
-    render();
+    patchTopbar();
+    renderPage();
   }
 }
 
@@ -213,7 +295,8 @@ export function nextMonth() {
   if (idx < months.length - 1) {
     state.selectedMonth = months[idx + 1];
     saveSelectedMonth();
-    render();
+    patchTopbar();
+    renderPage();
   }
 }
 

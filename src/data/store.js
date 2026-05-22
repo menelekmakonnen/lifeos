@@ -472,10 +472,17 @@ export function clearAllData(blankSlate = false) {
  */
 export function getStorageUsage() {
   let total = 0;
+  let count = 0;
   for (const key of Object.keys(localStorage)) {
     if (key.startsWith(PREFIX)) {
       total += localStorage.getItem(key).length * 2;
+      count++;
     }
   }
-  return total; // bytes
+  const kb = (total / 1024).toFixed(1);
+  return {
+    bytes: total,
+    keys: count,
+    display: total < 1024 ? `${total} B` : total < 1048576 ? `${kb} KB` : `${(total / 1048576).toFixed(2)} MB`,
+  };
 }
