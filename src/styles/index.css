@@ -950,43 +950,35 @@ textarea.form-input {
   font-weight: 700;
 }
 
-/* ── Modals ────────────────────────────────────────────────── */
+/* ── Panel (replaces modals — slides in from the left) ─────── */
 .modal-overlay {
   position: fixed;
   inset: 0;
   background: var(--bg-overlay);
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(6px);
   z-index: 200;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: var(--sp-4);
   animation: fadeIn 200ms var(--ease-out);
 }
-/* Flex spacers — absorb extra space above/below to center the modal.
-   When the modal is too tall they shrink and the overlay scrolls.
-   min-height prevents the modal from touching the very edge. */
-.modal-overlay::before,
-.modal-overlay::after {
-  content: '';
-  flex: 1 1 auto;
-  min-height: var(--sp-6);
-}
 .modal {
-  flex-shrink: 0;
+  position: fixed;
+  top: 0;
+  left: var(--sidebar-w);
+  bottom: 0;
+  width: 460px;
+  max-width: calc(100vw - var(--sidebar-w));
   background: var(--bg-surface-1);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-xl);
+  border-right: 1px solid var(--border-subtle);
   padding: var(--sp-6);
-  width: 100%;
-  max-width: 520px;
-  max-height: 85vh;
   overflow-y: auto;
-  animation: slideUp 300ms var(--ease-out);
-  box-shadow: var(--shadow-lg);
+  z-index: 201;
+  animation: slideInLeft 280ms var(--ease-out);
+  box-shadow: 8px 0 32px hsla(228, 20%, 4%, 0.5);
 }
-.modal-lg { max-width: 680px; }
+@keyframes slideInLeft {
+  from { transform: translateX(-100%); opacity: 0.5; }
+  to   { transform: translateX(0);     opacity: 1; }
+}
+.modal-lg { width: 580px; }
 .modal-header {
   display: flex;
   align-items: center;
@@ -1999,35 +1991,80 @@ details > p {
   .main { margin-left: 0; }
   .topbar-hamburger { display: grid; }
   .mobile-nav { display: flex; }
-  .content { padding-bottom: 72px; }
+  .content { padding: var(--sp-4); padding-bottom: 80px; }
 
   .grid-4, .grid-3 { grid-template-columns: repeat(2, 1fr); }
   .board { grid-template-columns: 1fr; }
   .fab { bottom: 80px; }
 
   .topbar-search { display: none; }
+  .topbar { padding: var(--sp-3) var(--sp-4); gap: var(--sp-3); }
+  .topbar-breadcrumb { font-size: 13px; }
+  .topbar-month { font-size: 12px; gap: var(--sp-1); }
+  .topbar-month button { width: 28px; height: 28px; font-size: 11px; }
+  .btn-add { padding: var(--sp-1) var(--sp-3); font-size: 12px; }
   .form-row { grid-template-columns: 1fr; }
 
+  /* Panel — slide from left edge (sidebar hidden on mobile) */
+  .modal { left: 0; max-width: 420px; }
+
+  /* Notes sidebar */
   .notes-sidebar { width: 320px; }
   .notes-tab { left: -40px; width: 40px; height: 72px; }
   .notes-tab:hover { left: -44px; width: 44px; }
+
+  /* Greeting */
+  .greeting { font-size: 26px; }
+
+  /* Tables */
+  .table-wrap { font-size: 12px; }
+  .table-wrap th, .table-wrap td { padding: var(--sp-2); }
 }
 
 /* ── Responsive: ≤ 560px (small mobile) ────────────────────── */
 @media (max-width: 560px) {
   .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; }
-  .content { padding: var(--sp-3); }
+  .content { padding: var(--sp-3); padding-bottom: 76px; }
   .stat-card .stat-value { font-size: 22px; }
-  .modal {
-    border-radius: var(--radius-lg);
-    padding: var(--sp-4);
-  }
+  .stat-card { padding: var(--sp-3); }
+  .card { padding: var(--sp-4); }
+  .card-sm { padding: var(--sp-3); }
   .cal-day { min-height: 60px; }
 
+  /* Panel — full width on small mobile */
+  .modal {
+    left: 0;
+    width: 100%;
+    max-width: 100%;
+    border-right: none;
+    border-radius: 0;
+    padding: var(--sp-4);
+  }
+
+  /* Topbar */
+  .topbar { padding: var(--sp-2) var(--sp-3); min-height: 48px; gap: var(--sp-2); }
+  .topbar-breadcrumb { display: none; }
+  .topbar-actions { gap: var(--sp-2); }
+  .topbar-month span { font-size: 11px; }
+  .btn-add span:last-child { display: none; }
+  .btn-add { padding: var(--sp-1) var(--sp-2); min-width: 32px; justify-content: center; }
+  .topbar-avatar { width: 28px; height: 28px; font-size: 11px; }
+
+  /* Greeting */
+  .greeting { font-size: 22px; }
+  .page-title { font-size: 22px; }
+  .section-title { font-size: 15px; }
+
+  /* Mobile nav */
+  .mobile-nav { padding: var(--sp-1) var(--sp-2); height: 60px; }
+  .mobile-nav-item { font-size: 9px; gap: 2px; }
+  .mobile-nav-item .nav-icon { font-size: 18px; }
+
+  /* Notes sidebar */
   .notes-sidebar { width: 100%; }
   .notes-tab {
     top: auto;
-    bottom: 80px;
+    bottom: 68px;
     transform: none;
     left: auto;
     right: 0;
@@ -2038,4 +2075,11 @@ details > p {
   }
   .notes-tab:hover { width: 44px; left: auto; }
   .notes-sidebar.open .notes-tab { display: none; }
+
+  /* Forms */
+  .form-input, .form-select { font-size: 16px; } /* prevents iOS zoom on focus */
+  .form-label { font-size: 12px; }
+
+  /* Tables scroll horizontally */
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 }
